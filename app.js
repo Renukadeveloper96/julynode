@@ -6,8 +6,10 @@ dotenv.config()
 const port=process.env.PORT||8210;
 const mongo = require('mongodb');
 const MongoClient = mongo.MongoClient;
+const cors = require('corse');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
+app.use(cors())
 //const mongourl = "mongodb://localhost:27017"
 const mongourl = "mongodb+srv://edureka123:1234@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority"
 
