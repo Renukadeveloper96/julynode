@@ -35,7 +35,7 @@ app.get('/cuisine',(req,res) =>{
     })
 })
 
-app.get('/restaurant',(req,res) =>{
+/*app.get('/restaurant',(req,res) =>{
     var query = {}
     if(req.query.cityId){
         query={city:req.query.cityId}
@@ -46,7 +46,22 @@ app.get('/restaurant',(req,res) =>{
         if(err) throw err;
         res.send(result)
     })
+})*/
+
+app.get('/restaurant',(req,res) =>{
+    var query = {}
+    if(req.query.stateId){
+        query={state_id:Number(req.query.stateId)}
+        console.log(query)
+    }else if(req.query.mealtype_id){
+        query={"mealTypes.mealtype_id":req.query.mealtype}
+    }
+    db.collection('restaurant').find(query).toArray((err,result)=>{
+        if(err) throw err;
+        res.send(result)
+    })
 })
+
 
 
 app.get('/filter/:mealType',(req,res) => {
