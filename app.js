@@ -64,33 +64,52 @@ app.get('/restaurant',(req,res) =>{
 
 
 
+
+//filterapi
+//(http://localhost:8210/filter/1?lcost=500&hcost=600)
 app.get('/filter/:mealType',(req,res) => {
-    var sort={cost:1};
-    var skip=0;
-    var limit=100000;
+    var sort = {cost:1}
+    var skip = 0;
+    var limit = 1000000000000;
     if(req.query.sortkey){
-        sort={cost:req.query.sortkey}
+        sort = {cost:req.query.sortkey}
     }
-    if(req.query.skip&&req.query.limit){
-        skip=Number(req.query.skip);
-        limit=Number(req.query.limit);
+    if(req.query.skip && req.query.limit){
+        skip = Number(req.query.skip);
+        limit = Number(req.query.limit)
     }
     var mealType = req.params.mealType;
-    var query = {"type.mealtype":mealType};
-    if(req.query.cuisine){
-        query = {"type.mealtype":mealType,"Cuisine.cuisine":req.query.cuisine }
+    var query = {"mealTypes.mealtype_id":Number(mealType)};
+    if(req.query.cuisine && req.query.lcost && req.query.hcost){
+        query={
+            $and:[{cost:{$gt:Number(req.query.lcost),$lt:Number(req.query.hcost)}}],
+            "cuisines.cuisine_id":Number(req.query.cuisine),
+            "mealTypes.mealtype_id":Number(mealType)
+        }
+    }
+    else if(req.query.cuisine){
+        query = {"mealTypes.mealtype_id":mealType,"cuisines.cuisine_id":Number(req.query.cuisine) }
+       //query = {"type.mealtype":mealType,"Cuisine.cuisine":{$in:["1","5"]}}
     }
     else if(req.query.lcost && req.query.hcost){
-        var lcost=Number(req.query.lcost);
-        var hcost=Number(req.query.hcost);
-        query={$and:[{cost:{$gt:lcost,$lt:hcost}}]}
+        var lcost = Number(req.query.lcost);
+        var hcost = Number(req.query.hcost);
+        query={$and:[{cost:{$gt:lcost,$lt:hcost}}],"mealTypes.mealtype_id":Number(mealType)}
     }
-    db.collection('restaurant').find(query).sort(sort).skip(skip).limit(limit).toArray((err,result)=>{
+    db.collection('restaurants').find(query).sort(sort).skip(skip).limit(limit).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
     })
 })
 
+// restaurant Details
+app.get('/details/:id',(req,res) => {
+    var id = req.params.id
+    db.collection(restaurants).find({restaurant_id:Number(id)}).toArray((err,result)=>{
+        if(err) throw err;
+        res.send(result)
+    })
+})
 // restaurant Details
 app.get('/details/:id',(req,res) => {
     var id = req.params.id
