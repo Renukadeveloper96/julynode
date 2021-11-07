@@ -1,78 +1,63 @@
 var express = require('express');
 const app = express();
 const bodyParser=require('body-parser');
-const dotenv=require('dotenv')
+const dotenv = require('dotenv')
 dotenv.config()
-const port=process.env.PORT||8210;
+const port = process.env.PORT||8210;
 const mongo = require('mongodb');
-const MongoClient = mongo.MongoClient;
+const MongoClient =mongo.MongoClient;
 const cors = require('cors');
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
-app.use(cors())
-//const mongourl = "mongodb://localhost:27017"
-const mongourl = "mongodb+srv://edureka123:1234@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority"
-
-var db;
+//to recive data from form
+app.use (bodyParser.urlencoded({extended:true}));
+app.use (bodyParser.json());
+app.use (cors());
+//const mongourl ="mongodb://localhost:27017"
+const mongourl ="mongodb+srv://edureka:1234@cluster0.qflcr.mongodb.net/zomato?retryWrites=true&w=majority"
+var db;  
 
 //get
-app.get('/',(req,res) => {
-    res.send("Welcome to Node Api1")
+app.get('/',(req,res) =>{
+    res.send("welcome to Api 2")
 })
-
-//category
-app.get('/location',(req,res) =>{
-    db.collection('location').find().toArray((err,result)=>{
+//list all cities
+app.get('/location',(req,res)=>{
+    db.collection('location').find().toArray
+    ((err,result) =>{
+        if(err) throw err;
+        res.send(result)
+    })
+})
+// list all restaurants
+app.get('/restaurants',(req,res)=>{
+    db.collection('restaurants').find().toArray
+    ((err,result) =>{
         if(err) throw err;
         res.send(result)
     })
 })
 
-app.get('/cuisine',(req,res) =>{
-    db.collection('cuisine').find().toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
-/*app.get('/restaurant',(req,res) =>{
-    var query = {}
-    if(req.query.cityId){
-        query={city:req.query.cityId}
-    }else if(req.query.mealtype){
-        query={"type.mealtype":req.query.mealtype}
-    }
-    db.collection('restaurant').find(query).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})*/
-
+//query example
 app.get('/restaurant',(req,res) =>{
     var query = {}
     if(req.query.stateId){
         query={state_id:Number(req.query.stateId)}
         console.log(query)
     }else if(req.query.mealtype_id){
-        query={"mealTypes.mealtype_id":req.query.mealtype}
+        query={"mealTypes.mealtype_id":Number(req.query.mealtype_id)}
     }
-    db.collection('restaurant').find(query).toArray((err,result)=>{
+    db.collection('restaurants').find(query).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
     })
 })
-
-
-
-
 //filterapi
 //(http://localhost:8210/filter/1?lcost=500&hcost=600)
-app.get('/filter/:mealType',(req,res) => {
-    var sort = {cost:1}
-    var skip = 0;
-    var limit = 1000000000000;
+app.get('/filter/:mealType',(req,res)=>{
+    var sort={cost:1}
+    var skip=0;
+    var limit=100000000000;
     if(req.query.sortkey){
-        sort = {cost:req.query.sortkey}
+        sort={cost:req.query.sortkey}
     }
     if(req.query.skip && req.query.limit){
         skip = Number(req.query.skip);
@@ -89,7 +74,7 @@ app.get('/filter/:mealType',(req,res) => {
     }
     else if(req.query.cuisine){
         query = {"mealTypes.mealtype_id":mealType,"cuisines.cuisine_id":Number(req.query.cuisine) }
-       //query = {"type.mealtype":mealType,"Cuisine.cuisine":{$in:["1","5"]}}
+        //query={"mealTypes.mealtype_id":mealType,"Cuisines.cuisine_id":req.query.cuisine}
     }
     else if(req.query.lcost && req.query.hcost){
         var lcost = Number(req.query.lcost);
@@ -102,37 +87,32 @@ app.get('/filter/:mealType',(req,res) => {
     })
 })
 
-// restaurant Details
-app.get('/details/:id',(req,res) => {
-    var id = req.params.id
-    db.collection(restaurants).find({restaurant_id:Number(id)}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-// restaurant Details
-app.get('/details/:id',(req,res) => {
-    var id = req.params.id
-    db.collection('restaurents').find({_id:id}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-    /*
-    db.collection('restaurents').findOne({_id:id},(err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-    */
-})
-app.post('/placeOrder',(req,res) => {
-    console.log(req.body);
-    db.collection('orders').insert(req.body,(err,result) => {
-        if(err) throw err;
-        res.send("Order Placed")
-    })
-})
 
-app.get('/viewOrder',(req,res) => {
+//list all quicksearches
+app.get('/quicksearch',(req,res)=>{
+    db.collection('mealType').find().toArray
+    ((err,result) =>{
+        if(err) throw err;
+        res.send(result)
+    })
+})
+//restaurant details
+app.get('/details/:id',(req,res)=>{
+    var id=req.params.id
+    db.collection('restaurants').find({restaurant_id:Number(id)}).toArray((err,result)=>{
+        if(err) throw err;
+        res.send(result)
+    }) 
+})
+//place order 
+app.post('/placeOrder',(req,res)=>{
+    console.log(req.body);
+    db.collection('orders').insert(req.body,(err,result)=>{
+        if(err) throw err;
+        res.send("order placed")
+    })
+})
+app.get('/viewOrder',(req,res)=>{
     var query = {}
     if(req.query.email){
         query = {email:req.query.email}
@@ -142,80 +122,19 @@ app.get('/viewOrder',(req,res) => {
         res.send(result)
     })
 })
-
-app.get('/viewOrder/:id',(req,res) => {
+app.get('/viewOrder/:id',(req,res)=>{
     var id = mongo.ObjectId(req.params.id);
     db.collection('orders').find({_id:id}).toArray((err,result)=>{
-        if(err) throw err;
+        if(err)throw err;
         res.send(result)
     })
 })
-
-app.get('/viewOrder',(req,res) => {
-    var email = req.query.email;
-    db.collection('orders').find({email:email}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
-
-
-app.delete('/deleteOrder',(req,res) => {
+app.delete('/deleteOrder',(req,res)=>{
     db.collection('orders').remove({},(err,result)=>{
         if(err) throw err;
         res.send(result)
     })
 })
-
-app.get('/restaurant/:cityId',(req,res) =>{
-    var cityId=req.params.cityId;
-    console.log("cityId>>>>",cityId)
-    db.collection('restaurant').find({city:cityId}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-//query
-app.get('/restaurant',(req,res) =>{
-    var cityId=req.query.cityId?req.query.cityId:"2";
-    console.log("cityId>>>>",cityId)
-    db.collection('restaurant').find({city:cityId}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
-app.get('/restaurant',(req,res) =>{
-    var query = {}
-    if(req.query.cityId){
-        query={city:req.query.cityId}
-    }else if(req.query.mealtype){
-        query={"type.mealtype":req.query.mealtype}
-    }
-    db.collection('restaurant').find(query).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
-
-app.get('/restaurant',(req,res) =>{
-    var cityId=req.query.cityId?req.query.cityId:"2";
-    console.log("cityId>>>>",cityId)
-    db.collection('restaurant').find({city:cityId}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
-app.get('/quicksearch',(req,res) =>{
-    db.collection('mealtype').find().toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-
 app.put('/updateStatus/:id',(req,res) => {
     var id = mongo.ObjectId(req.params.id);
     var status = 'Pending';
@@ -243,7 +162,6 @@ app.put('/updateStatus/:id',(req,res) => {
     )
 })
 
-        
 MongoClient.connect(mongourl, (err,client) => {
     if(err) console.log("Error While Connecting");
     db = client.db('zomato');
@@ -251,3 +169,5 @@ MongoClient.connect(mongourl, (err,client) => {
         console.log(`listening on port no ${port}`)
     });
 })
+
+
