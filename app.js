@@ -3,7 +3,7 @@ const app = express();
 const bodyParser=require('body-parser');
 const dotenv = require('dotenv')
 dotenv.config()
-const port = process.env.PORT||8210;
+const port = process.env.PORT||8000;
 const mongo = require('mongodb');
 const MongoClient =mongo.MongoClient;
 const cors = require('cors');
@@ -12,7 +12,7 @@ app.use (bodyParser.urlencoded({extended:true}));
 app.use (bodyParser.json());
 app.use (cors());
 //const mongourl ="mongodb://localhost:27017"
-const mongourl ="mongodb+srv://edureka:1234@cluster0.qflcr.mongodb.net/zomato?retryWrites=true&w=majority"
+const mongourl ="mongodb+srv://zomato:zomato127@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority"
 var db;  
 
 //get
@@ -27,9 +27,8 @@ app.get('/location',(req,res)=>{
         res.send(result)
     })
 })
-// list all restaurants
-app.get('/restaurants',(req,res)=>{
-    db.collection('restaurants').find().toArray
+app.get('/restaurant',(req,res)=>{
+    db.collection('restaurant').find().toArray
     ((err,result) =>{
         if(err) throw err;
         res.send(result)
@@ -49,6 +48,21 @@ app.get('/restaurant',(req,res) =>{
         if(err) throw err;
         res.send(result)
     })
+})
+app.get('/quicksearch',(req,res)=>{
+    db.collection('mealType').find().toArray
+    ((err,result) =>{
+        if(err) throw err;
+        res.send(result)
+    })
+})
+//restaurant details
+app.get('/details/:id',(req,res)=>{
+    var id=req.params.id
+    db.collection('restaurant').find({restaurant_id:Number(id)}).toArray((err,result)=>{
+        if(err) throw err;
+        res.send(result)
+    }) 
 })
 //filterapi
 //(http://localhost:8210/filter/1?lcost=500&hcost=600)
@@ -89,8 +103,8 @@ app.get('/filter/:mealType',(req,res)=>{
 
 
 //list all quicksearches
-app.get('/quicksearch',(req,res)=>{
-    db.collection('mealType').find().toArray
+app.get('/mealtype',(req,res)=>{
+    db.collection('mealtype').find().toArray
     ((err,result) =>{
         if(err) throw err;
         res.send(result)
@@ -104,13 +118,22 @@ app.get('/details/:id',(req,res)=>{
         res.send(result)
     }) 
 })
-//menu details
-app.get('/menu/:id',(req,res)=>{
-    var id=req.params.id
+// menu Details on basis for restaurant
+app.get('/menu/:id',(req,res) => {
+    var id = req.params.id
+    console.log(id)
     db.collection('menu').find({restaurant_id:Number(id)}).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
-    }) 
+    })
+})
+
+app.post('/menuItem',(req,res) => {
+    console.log(req.body)
+    db.collection('menu').find({menu_id:{$in:req.body.ids}}).toArray((err,result)=>{
+        if(err) throw err;
+        res.send(result)
+    })
 })
 //place order 
 app.post('/placeOrder',(req,res)=>{
