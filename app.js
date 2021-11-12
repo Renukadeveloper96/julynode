@@ -27,8 +27,9 @@ app.get('/location',(req,res)=>{
         res.send(result)
     })
 })
-app.get('/restaurant',(req,res)=>{
-    db.collection('restaurant').find().toArray
+// list all restaurants
+app.get('/restaurants',(req,res)=>{
+    db.collection('restaurants').find().toArray
     ((err,result) =>{
         if(err) throw err;
         res.send(result)
@@ -48,21 +49,6 @@ app.get('/restaurant',(req,res) =>{
         if(err) throw err;
         res.send(result)
     })
-})
-app.get('/quicksearch',(req,res)=>{
-    db.collection('mealType').find().toArray
-    ((err,result) =>{
-        if(err) throw err;
-        res.send(result)
-    })
-})
-//restaurant details
-app.get('/details/:id',(req,res)=>{
-    var id=req.params.id
-    db.collection('restaurant').find({restaurant_id:Number(id)}).toArray((err,result)=>{
-        if(err) throw err;
-        res.send(result)
-    }) 
 })
 //filterapi
 //(http://localhost:8210/filter/1?lcost=500&hcost=600)
@@ -103,8 +89,8 @@ app.get('/filter/:mealType',(req,res)=>{
 
 
 //list all quicksearches
-app.get('/mealtype',(req,res)=>{
-    db.collection('mealtype').find().toArray
+app.get('/quicksearch',(req,res)=>{
+    db.collection('mealType').find().toArray
     ((err,result) =>{
         if(err) throw err;
         res.send(result)
@@ -118,22 +104,21 @@ app.get('/details/:id',(req,res)=>{
         res.send(result)
     }) 
 })
-// menu Details on basis for restaurant
-app.get('/menu/:id',(req,res) => {
-    var id = req.params.id
-    console.log(id)
+//menu details on basis of restaurant
+app.get('/menu/:id',(req,res)=>{
+    var id=req.params.id
     db.collection('menu').find({restaurant_id:Number(id)}).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
-    })
+    }) 
 })
-
-app.post('/menuItem',(req,res) => {
+app.post('/menuItem',(req,res)=>{
     console.log(req.body)
     db.collection('menu').find({menu_id:{$in:req.body.ids}}).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
-    })
+    }) 
+    
 })
 //place order 
 app.post('/placeOrder',(req,res)=>{
@@ -200,5 +185,6 @@ MongoClient.connect(mongourl, (err,client) => {
         console.log(`listening on port no ${port}`)
     });
 })
+
 
 
