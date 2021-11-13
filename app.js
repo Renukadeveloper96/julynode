@@ -107,14 +107,14 @@ app.get('/details/:id',(req,res)=>{
 //menu details on basis of restaurant
 app.get('/menu/:id',(req,res)=>{
     var id=req.params.id
+    console.log(id)
     db.collection('menu').find({restaurant_id:Number(id)}).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
     }) 
 })
 app.post('/menuItem',(req,res)=>{
-    console.log(req.body)
-    db.collection('menu').find({menu_id:{$in:req.body.ids}}).toArray((err,result)=>{
+    db.collection('menu').find({menu_id:{$in:req.body}}).toArray((err,result)=>{
         if(err) throw err;
         res.send(result)
     }) 
