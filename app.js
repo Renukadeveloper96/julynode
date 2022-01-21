@@ -13,13 +13,15 @@ app.use (bodyParser.json());
 app.use (cors());
 //const mongourl ="mongodb://localhost:27017"
 //const mongourl ="mongodb+srv://zomato:zomato1277@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
-const mongourl ="mongodb+srv://zomato:zomato77@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
+const mongourl ="mongodb+srv://zomato:zomato23@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
 var db;  
 
 //get
 app.get('/',(req,res) =>{
     res.send("welcome to zomatoapp")
 })
+
+
 //list all cities
 app.get('/location',(req,res)=>{
     db.collection('location').find().toArray
@@ -28,6 +30,7 @@ app.get('/location',(req,res)=>{
         res.send(result)
     })
 })
+
 // list all restaurants
 app.get('/restaurants',(req,res)=>{
     db.collection('restaurants').find().toArray
