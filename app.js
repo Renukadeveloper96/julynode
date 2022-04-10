@@ -13,7 +13,8 @@ app.use (bodyParser.json());
 app.use (cors());
 //const mongourl ="mongodb://localhost:27017"
 //const mongourl ="mongodb+srv://zomato:zomato1277@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
-const mongourl ="mongodb+srv://zomato:zomato23@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
+// Copyrightconst mongourl ="mongodb+srv://zomato:zomato23@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
+const mongourl="mongodb+srv://Renuka:renuka123@cluster0.nbutl.mongodb.net/zomato?retryWrites=true&w=majority";
 var db;  
 
 //get
